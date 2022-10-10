@@ -2,3 +2,4 @@
 *.op
 *.op.gz
 *.zip
+py/*.txt
