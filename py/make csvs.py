@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os, re, gzip, time
 
 def F2C(f): #Fahrenheit 2 Celcius
