@@ -3,3 +3,4 @@
 *.op.gz
 *.zip
 py/*.txt
+!py/*.csv
