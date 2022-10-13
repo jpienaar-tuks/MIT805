@@ -8,6 +8,7 @@ Created on Thu Oct 13 10:44:05 2022
 import json
 import pandas as pd
 import plotly.express as px
+import os
 
 with open('countries.geo.json','rt') as f:
     geojson = json.load(f)
@@ -38,7 +39,7 @@ for season in ['WINTER','SUMMER']:
                                            'p': 'p statistic'},
                                    zoom=2)
         
-        with open(f'{season}-{variable}.html','wt') as f:
+        with open(os.path.join('..','visuals',f'{season}-{variable}.html'),'wt') as f:
             f.write(fig.to_html(include_plotlyjs='cdn'))
             
 
@@ -81,7 +82,7 @@ fig = px.choropleth_mapbox(df_visual, geojson=geojson,
                                    'ISO3':'Country'},
                            zoom=2)
 fig["layout"].pop("updatemenus")
-with open('Precipitation.html','wt') as f:
+with open(os.path.join('..','visuals','Precipitation.html'),'wt') as f:
     f.write(fig.to_html(include_plotlyjs='cdn'))
     
     
