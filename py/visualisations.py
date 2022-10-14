@@ -17,6 +17,8 @@ df_temp = pd.read_csv('Temperature regressions.csv')
 country_code_lookups = pd.read_csv('Countrycodes.csv', usecols=['FIPS_GEC','ISO_3166_3'])
 country_code_lookups.columns=['ISO3','FIPS']
 
+country_lookups_dict = {row.FIPS: row.ISO3 for i, row in country_code_lookups.iterrows()}
+
 
 for season in ['WINTER','SUMMER']:
     for variable in ['MIN_T_AVG','MEAN_T_AVG','MAX_T_AVG']:
@@ -84,6 +86,41 @@ fig = px.choropleth_mapbox(df_visual, geojson=geojson,
 fig["layout"].pop("updatemenus")
 with open(os.path.join('..','visuals','Precipitation.html'),'wt') as f:
     f.write(fig.to_html(include_plotlyjs='cdn'))
+    
+df_world_temp=pd.read_csv('temp.csv')
+df_world_temp['ISO3']=df_world_temp['Country'].map(country_lookups_dict)
+fig = px.choropleth_mapbox(df_world_temp.loc[(df_world_temp.Season=='SUMMER') & (df_world_temp.Year>1980)].dropna(), 
+                           geojson=geojson, 
+                           locations='ISO3', color='MEAN_T_AVG',
+                           animation_frame='Year',
+                           range_color=[0,45],
+                           mapbox_style="carto-positron",
+                           #hover_data={'slope':':.3f',
+                           #            'p':':.4f',
+                           #            'month_text':True,
+                           #            'ISO3':True},
+                           #labels={'slope': 'Change in rainfall (mm/yr)',
+                           #        'p': 'p statistic',
+                           #        'month_text':'Month',
+                           #        'ISO3':'Country'},
+                           zoom=2)
+fig["layout"].pop("updatemenus")
+with open(os.path.join('..','visuals','World temperatures.html'),'wt') as f:
+    f.write(fig.to_html(include_plotlyjs='cdn'))
+    
+df_SA_precip = pd.read_csv('precip.csv')
+df_SA_precip = df_SA_precip.loc[df_SA_precip.Country=='SF']
+df_SA_precip = df_SA_precip.pivot(index='Year', columns='Month',values='PRCP_AVG')
+fig = px.imshow(df_SA_precip.loc[df_SA_precip.index>=1980].transpose())
+
+with open(os.path.join('..','visuals','SA precipitation.html'),'wt') as f:
+    f.write(fig.to_html(include_plotlyjs='cdn'))
+    
+for season in ['WINTER','SUMMER']:
+    df_SA_temp = df_world_temp.loc[(df_world_temp.Country=='SF') & (df_world_temp.Season==season)].melt(id_vars=['Country','Year','Season','ISO3'])
+    fig = px.scatter(df_SA_temp, x='Year', y='value', color='variable',trendline='ols')
+    with open(os.path.join('..','visuals',f'SA {season} temperatures.html'),'wt') as f:
+        f.write(fig.to_html(include_plotlyjs='cdn'))
     
     
     

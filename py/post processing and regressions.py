@@ -28,6 +28,7 @@ df_temp_pivot['MAX_T_AVG'] = df_temp_pivot['MAX_T']/df_temp_pivot['MAX_T_C']
 df_temp_pivot['MEAN_T_AVG'] = df_temp_pivot['MEAN_T']/df_temp_pivot['MEAN_T_C']
 df_temp_pivot['MIN_T_AVG'] = df_temp_pivot['MIN_T']/df_temp_pivot['MIN_T_C']
 df_temp_pivot = df_temp_pivot.drop(['MAX_T','MAX_T_C','MEAN_T','MEAN_T_C','MIN_T','MIN_T_C'],axis=1).unstack()
+df_temp_pivot.stack().to_csv('temp.csv')
 
 df_precip = pd.DataFrame(precip_data, columns=['Country','Year','Month','Variable','Value'])
 df_precip['Year']=df_precip['Year'].astype('int32')
@@ -37,6 +38,7 @@ df_precip['Value']=df_precip['Value'].astype('float')
 df_precip_pivot = df_precip.pivot(index=['Country','Year','Month'],columns='Variable',values='Value')
 df_precip_pivot['PRCP_AVG'] = df_precip_pivot['PRCP']/df_precip_pivot['PRCP_C']
 df_precip_pivot = df_precip_pivot.drop(['PRCP','PRCP_C'], axis=1).unstack()
+df_precip_pivot.stack().to_csv('precip.csv')
 
 # Precip regressions
 precip_regressions=[]
