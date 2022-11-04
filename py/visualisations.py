@@ -87,7 +87,7 @@ fig["layout"].pop("updatemenus")
 with open(os.path.join('..','visuals','Precipitation.html'),'wt') as f:
     f.write(fig.to_html(include_plotlyjs='cdn'))
     
-df_world_temp=pd.read_csv('temp.csv')
+df_world_temp=pd.read_csv('World temperatures.csv')
 df_world_temp['ISO3']=df_world_temp['Country'].map(country_lookups_dict)
 fig = px.choropleth_mapbox(df_world_temp.loc[(df_world_temp.Season=='SUMMER') & (df_world_temp.Year>1980)].dropna(), 
                            geojson=geojson, 
@@ -112,15 +112,18 @@ df_SA_precip = pd.read_csv('precip.csv')
 df_SA_precip = df_SA_precip.loc[df_SA_precip.Country=='SF']
 df_SA_precip = df_SA_precip.pivot(index='Year', columns='Month',values='PRCP_AVG')
 fig = px.imshow(df_SA_precip.loc[df_SA_precip.index>=1980].transpose())
+fig.update_layout(font=dict(size=24))
 
 with open(os.path.join('..','visuals','SA precipitation.html'),'wt') as f:
     f.write(fig.to_html(include_plotlyjs='cdn'))
     
 for season in ['WINTER','SUMMER']:
     df_SA_temp = df_world_temp.loc[(df_world_temp.Country=='SF') & (df_world_temp.Season==season)].melt(id_vars=['Country','Year','Season','ISO3'])
-    fig = px.scatter(df_SA_temp, x='Year', y='value', color='variable',trendline='ols')
+    df_SA_temp.rename(columns={'value':'Temperature'}, inplace=True)
+    fig = px.scatter(df_SA_temp, x='Year', y='Temperature', color='variable',trendline='ols')
     with open(os.path.join('..','visuals',f'SA {season} temperatures.html'),'wt') as f:
         f.write(fig.to_html(include_plotlyjs='cdn'))
+    fig.write_image(os.path.join('..','visuals',f'SA {season} temperatures.jpg'), width=400, height=300, engine='kaleido')
     
     
     
